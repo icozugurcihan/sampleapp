@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  development:
+    restart: always
+    image: cihan:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "4200:4200"
+    volumes:
+      - .:/usr/src/app
+
+  test:
+    restart: on-failure
+    image: cihan:test
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: test
+    depends_on:
+      - development
+    volumes:
+      - test-volume:/usr/src/app/tests
+
+  production:
+    restart: unless-stopped
+    image: cihan:prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "80:80"
+    volumes:
+      - production-volume:/app
+
+volumes:
+   test-volume:
+   production-volume:
